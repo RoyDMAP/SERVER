@@ -45,5 +45,14 @@ def delete_products(index):
         return json.dumps(delete_products)
     else:
         return "that index does not exist"
+    
+@app.patch("/api/products/<int:index>")
+def patch_products(index):
+    patch_products = request.get_json
+    if 0<= index < len(product):
+        product(index).update(patch_products)
+        return json.dumps(delete_products)
+    else:
+        return "that index does not exist"
 
 app.run(debug=True)
