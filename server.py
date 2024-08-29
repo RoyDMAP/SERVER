@@ -32,7 +32,13 @@ def save_products():
 
 @app.get("/api/products")
 def get_products():
-    return json.dumps(product)
+    cursor = db.product.find({}) # find all
+    products = []
+    for prod in cursor:
+        products.append(fix_id(prod))
+
+    return json.dumps(products)
+
 
 @app.put("/api/products/<int:index>")
 def update_products(index):
@@ -60,5 +66,62 @@ def patch_products(index):
         return json.dumps(product)
     else:
         return "that index does not exist"
+    
+###########################################
+#######   CATEGORIES   ####################
+###########################################
+
+
+@app.get("/api/categories")
+def get_categories():
+    categories = []
+    cursor = db.product.find({}) # find all
+    for prod in cursor:
+        cat = prod["category"]
+        if cat not in categories:
+            categories.append(cat)
+
+
+    return json.dumps(categories)
+
+@app.get("/api/products/category/<category>")
+def products_by_category(category):
+    cursor = db.product.find({"category": category})
+    products = []
+    for prod in cursor:
+        products.append(fix_id(prod))
+
+    return json.dumps(products)
+
+
+@app.get("/api/report/total")
+def get_total():
+    total = 0
+    cursor = db.product.find({})
+    for prod in cursor:
+        price = prod["price"]
+        total += price
+
+    return json.dumps(total)
+
+###########################################
+#######   COUPONS   ####################
+###########################################
+
+@app.post("/api/coupons")
+def save_coupons():
+    coupon = request.get_json()
+    db.coupons.insert_one(coupon)
+    print (coupon)
+    return json.dumps(fix_id(coupon))
+
+@app.get("/api/coupons")
+def get_coupons():
+    cursor = db.coupons.find({}) # find all
+    coupon = []
+    for prod in cursor:
+        coupon.append(fix_id(prod))
+
+    return json.dumps(coupon)
 
 app.run(debug=True)
